@@ -10,7 +10,7 @@
 
 @implementation UIImage (Extension)
 
-- (void)DY_imageWithSize:(CGSize)size fillColor:(UIColor *)fillColor completion:(void (^)(UIImage *))completion{
+- (void)dy_imageWithSize:(CGSize)size fillColor:(UIColor *)fillColor completion:(void (^)(UIImage *))completion{
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         //开始时间
         NSTimeInterval start = CACurrentMediaTime();
@@ -38,7 +38,7 @@
         });
     });
 }
-- (void)dj_imageWithSize:(CGSize)size fillColor:(UIColor *)fillColor completion:(void (^)(UIImage *))completion{
+- (void)dy_imageWithSize:(CGSize)size fillColor:(UIColor *)fillColor completion:(void (^)(UIImage *))completion{
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         //开始时间
         NSTimeInterval start = CACurrentMediaTime();
@@ -71,12 +71,48 @@
 }
 
 
+
 +(UIImage*)Base64StrToUIImage:(NSString*)encodedImageStr
 {
     NSData *decodedImageData = [[NSData alloc]
                                 initWithBase64EncodedString:encodedImageStr options:NSDataBase64DecodingIgnoreUnknownCharacters];
     UIImage *decodedImage = [UIImage imageWithData:decodedImageData];
     return decodedImage;
+}
+
+
+
++ (UIImage*)dy_imageWithColor:(UIColor*)color size:(CGSize)size {
+    
+    if(!color || size.width<=0|| size.height<=0)return nil;
+    CGRect rect =CGRectMake(0.0f,0.0f, size.width, size.height);
+    UIGraphicsBeginImageContextWithOptions(rect.size,NO, 0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(context, color.CGColor);
+    CGContextFillRect(context, rect);
+    UIImage *image =UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return image;
+}
+
+
++ (UIImage *)dy_circleImageWithText:(NSString *)text setColor:(UIColor *)setColor size:(CGSize)size fontSize:(NSInteger)fontSize textColor:(UIColor *)textColor{
+    
+    
+    NSDictionary *fontAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:fontSize?fontSize:15], NSForegroundColorAttributeName: textColor};
+    CGSize textSize = [text sizeWithAttributes:fontAttributes];
+    CGPoint drawPoint = CGPointMake((size.width - textSize.width)/2, (size.height - textSize.height)/2);
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    UIBezierPath *path = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(0, 0, size.width, size.height)];
+    CGContextSetFillColorWithColor(ctx, setColor.CGColor);
+    [path fill];
+    [text drawAtPoint:drawPoint withAttributes:fontAttributes];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    
 }
 
 @end
